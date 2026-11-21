@@ -26,6 +26,10 @@ def main() -> int:
         raise ValueError(f"entry must be 1-{POEM_MAX_CHARS} characters, got {len(text)}")
     if "\x00" in text:
         raise ValueError("entry must not contain NUL bytes")
+    if any(ord(ch) < 0x20 and ch != "\n" for ch in text):
+        raise ValueError("entry must not contain ASCII control characters other than newline")
+    if text.encode("utf-8").decode("utf-8") != text:
+        raise ValueError("entry failed UTF-8 round-trip validation")
     if not text.strip():
         raise ValueError("entry must not be blank")
     DESTINATION.parent.mkdir(parents=True, exist_ok=True)
